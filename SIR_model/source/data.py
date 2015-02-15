@@ -1,5 +1,4 @@
 def set_inputs(inputs,v_alpha,v_beta,v_eta,v_lambda,v_delta,v_xi):
-	inputs['status']='READY'
 	probs=inputs['probabilities']
 	probs['alpha']=v_alpha
 	probs['beta']=v_beta
@@ -8,19 +7,15 @@ def set_inputs(inputs,v_alpha,v_beta,v_eta,v_lambda,v_delta,v_xi):
 	rates['lambda']=v_lambda
 	rates['delta']=v_delta
 	rates['xi']=v_xi
+	inputs['status']='READY'
+
+def set_graph(graph):
+	from graph_utils import *
+	if graph['status']=='INIT':
+		graph['savefile']=generate_graph('demo0',10)
+	graph['status']='READY'
 
 SIR={
-	'inputs':{
-		'status':'INIT',	
-		'probabilities':{
-			'alpha':0,
-			'beta':0,
-			'eta':0},
-		'rates':{
-			'lambda':0,
-			'delta':0,
-			'xi':0},
-	},
 	'graph':{
 		'status':'INIT',
 		'size':0,
@@ -65,6 +60,17 @@ SIR={
 					}
 			},
 		},
+	},
+	'inputs':{
+		'status':'INIT',	
+		'probabilities':{
+			'alpha':0,
+			'beta':0,
+			'eta':0},
+		'rates':{
+			'lambda':0,
+			'delta':0,
+			'xi':0},
 	},
 	'results':{
 		't_t':[],
