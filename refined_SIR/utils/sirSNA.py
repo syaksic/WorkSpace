@@ -22,6 +22,7 @@ def start(graph,inputs):
 			}
 	results['users']={
 			't_t':[0],
+			'Theta_k':[0],
 			'I_t':[initial['I0']],
 			'S_t':[initial['S0']],
 			'R_t':[initial['R0']]
@@ -43,6 +44,10 @@ def start(graph,inputs):
 			k=random.randint(0,len(graph['degree']['index'])-1)
 		results['iterations']['I_k_t'][k]-=1
 		results['iterations']['R_k_t'][k]+=1
+	results['users']['S_t_min']=[results['iterations']['S_k_t'][0]]
+	results['users']['S_t_max']=[results['iterations']['S_k_t'][-1]]
+	results['users']['S_t_big']=[results['iterations']['S_k_t'][-3]]
+	results['users']['S_t_mean']=[results['iterations']['S_k_t'][3]]
 	weights={}
 	weights['W_IS_k']=[np.float64(0.0)]*len(graph['degree']['index'])
 	weights['W_IR_k']=[np.float64(0.0)]*len(graph['degree']['index'])
@@ -89,7 +94,7 @@ def iterate_uncorr(results,graph,weights):
 			results['iterations']['R_k_t'][k]-=1
 			results['iterations']['S_k_t'][k]+=1
 			break
-	return results,tau
+	return results,tau,Theta_k
 
 def iterate_corr(results,graph,weights):
 	degree_dist=graph['degree']['Exp']['degree_dist']
@@ -135,20 +140,22 @@ def iterate_corr(results,graph,weights):
 
 def condition(results,maxIters):
 	result=False
-	if not(results['users']['S_t'][-1]>0 and (results['rates']['stifling_rate']>0.0 or results['rates']['forgetting_rate']>0.0)):
+	if len(results['users']['t_t'])>=maxIters:
 		result=True
-	elif len(results['users']['t_t'])>=maxIters:
+	elif results['users']['I_t'][-1]==0 and results['users']['S_t'][-1]==0:
 		result=True
-	elif results['users']['I_t'][-1]==0:
-		result =True
+	elif results['users']['S_t'][-1]==0 and (results['rates']['persuading_rate']==0.0 and results['rates']['remembering_rate']==0.0):
+		result=True
+	elif results['users']['I_t'][-1]==0 and (results['rates']['stifling_rate']==0.0 and results['rates']['forgetting_rate']==0.0) and (results['rates']['persuading_rate']==0.0 and results['rates']['remembering_rate']==0.0):
+		result=True
 	return result
 
 def execute(graph,inputs,path):
 	results,weights=start(graph,inputs)
 	maxIters=inputs['MaxIter']
-	spy=10
+	spy=inputs['MaxIter']/10
 	while True:
-		results,duration=iterate_uncorr(results,graph,weights)
+		results,duration,Theta_k=iterate_uncorr(results,graph,weights)
 		#results,duration=iterate_corr(results,graph,weights)
 		i_t=0
 		s_t=0
@@ -158,9 +165,14 @@ def execute(graph,inputs,path):
 			i_t+=results['iterations']['I_k_t'][k]
 			s_t+=results['iterations']['S_k_t'][k]
 			r_t+=results['iterations']['R_k_t'][k]
+		results['users']['Theta_k'].append(Theta_k)
 		results['users']['t_t'].append(t_t)
 		results['users']['I_t'].append(i_t)
 		results['users']['S_t'].append(s_t)
+		results['users']['S_t_min'].append(results['iterations']['S_k_t'][0])
+		results['users']['S_t_max'].append(results['iterations']['S_k_t'][-1])
+		results['users']['S_t_big'].append(results['iterations']['S_k_t'][-3])
+		results['users']['S_t_mean'].append(results['iterations']['S_k_t'][3])
 		results['users']['R_t'].append(r_t)
 		if len(results['users']['t_t'])%spy==0:
 			print('remaining: '+str((results['users']['I_t'][-1],results['users']['S_t'][-1],results['users']['R_t'][-1],results['users']['t_t'][-1]))+' -- '+str(100*float(len(results['users']['t_t']))/maxIters)+'%')

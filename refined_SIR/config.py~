@@ -19,14 +19,14 @@ import shutil
 ##########                                                                      ###########                                                                    
 #Setup parameters for new experiments
 #Initial conditions S0+I0+R0=size
-size=10000
+size=100000
 S0 = 1
-I0 = size-S0
+I0 = 99999
 R0 = 0
 #rates
 _lambda=1.0
 _delta=0.01
-_xi=0.0000003
+_xi=0.001
 #probs
 _alpha=0.3
 _beta=0.5
@@ -133,18 +133,6 @@ def src_Menu():
 		op=None
 	return op
 
-
-
-############# _______  _______  _______  _______          #######################
-#############(  ____ \(  ____ )(  ___  )(  ____ )|\     /|#######################
-#############| (    \/| (    )|| (   ) || (    )|| )   ( |#######################
-#############| |      | (____)|| (___) || (____)|| (___) |#######################
-#############| | ____ |     __)|  ___  ||  _____)|  ___  |#######################
-#############| | \_  )| (\ (   | (   ) || (      | (   ) |#######################
-#############| (___) || ) \ \__| )   ( || )      | )   ( |#######################
-#############(_______)|/   \__/|/     \||/       |/     \|#######################
-
-
 def set_graph():
 	graph={}
 	graph['status']='INIT'
@@ -153,9 +141,7 @@ def set_graph():
 	elif os.path.isfile(path+"graph.gpickle"):
 		Graph=loadtest(path+"graph.gpickle")
 	else:
-		#test erdos rengi
-		graph['savefile'],Graph=generate_graph(path+'graph',size,True)
-		#graph['savefile'],Graph=generate_graph(path+'graph',size)
+		graph['savefile'],Graph=generate_graph(path+'graph',size)
 	graph['nodes']=Graph.number_of_nodes()
 	graph['edges']=Graph.number_of_edges()
 	graph['name']=Graph.name
@@ -211,8 +197,6 @@ def set_up(new_path=None):
 	    os.makedirs(path+'results')
 	if not os.path.exists(path+'plots'):
 	    os.makedirs(path+'plots')
-	if not os.path.exists(path+'inform'):
-	    os.makedirs(path+'inform')
 	if not os.path.exists(path+'modules'):
 	    os.makedirs(path+'modules')
 	    shutil.copy2('./utils/extended_SIR.py', path+'modules'+'/extended_SIR.py')

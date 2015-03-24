@@ -34,8 +34,11 @@ def savegplickle(G, fname):
 	nx.write_gpickle(G,fname)
 	return fname
 
-def generate_graph(name,size):
-	Graph=nx.barabasi_albert_graph(size,3)
+def generate_graph(name,size,erdo=False):
+	if erdo==False:
+		Graph=nx.barabasi_albert_graph(size,3)
+	else:
+		Graph=nx.fast_gnp_random_graph(size,0.06)
 	fname=name+'.json'
 	savejson(Graph,fname)
 	nx.write_gml(Graph, name+'.gml')

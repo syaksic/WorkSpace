@@ -1,0 +1,20 @@
+Demo TelePatica
+
+Pregunta 1:
+-¿Eres X?
+
+Respuesta SI:
+-¿Estas en X.getlastlocation()?
+
+Respuesta SI:
+-¿Sabes que hacer?
+
+Respuesta NO:
+-¿Hiciste X.currenttask()?
+
+Respuesta NO:
+-¿Sabes como hacer X.currenttask()?
+
+
+
+
